@@ -1,0 +1,84 @@
+<head>
+  <title>metaviewer</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Metaviewer</h1>
+        <p>
+            Looks up metadata about an Epic Organization's FHIR server
+            Based on the list from: <a href=https://open.epic.com/MyApps/Endpoints>https://open.epic.com/MyApps/Endpoints</a>
+        </p>
+        {{> buttons}}
+        <br />
+        {{> dropdown}}
+        {{> results}}
+    </div>
+</body>
+
+
+<template name="dropdown">
+    <form>
+        <select class="dropdownList">
+            {{#each endpointList}}
+            <option value="{{FHIRPatientFacingURI}}">{{OrganizationName}}</option>
+            {{/each}}
+
+        </select>
+    </form>
+  <br />
+
+</template>
+
+<template name="buttons">
+    <button class="getList">Get the list!</button>
+    <button class="clearList">Clear the list!</button>
+</template>
+
+<template name="results">
+
+    <hr />
+    <h2>Results: </h2>
+    {{#if resultPresent}}
+    
+    <ul>
+        <li>FHIR Version: {{result.fhirVersion}}</li>
+        <li>Software Name: {{result.software.name}} - version {{result.software.version}}</li>
+        <li>Status: {{result.status}}</li>
+
+        <li>
+            Security services:
+            <ul>
+                {{#each result.rest}}
+                    {{#each security.service}}
+                        <li>{{text}} </li>
+                    {{/each}}
+                {{/each}}
+            </ul>
+        </li>
+       <li> Security Extensions:
+            <ul>
+                {{#each result.rest}}
+                    {{#each security.extension}}
+                        {{#each extension}}
+                        <li>{{url}}: {{valueUri}} </li>
+                        {{/each}}
+                    {{/each}}
+                {{/each}}
+            </ul>
+            </li>
+        <li>Resources:
+            <ul>
+                {{#each result.rest}}
+                    {{#each resource}}
+                        <li>{{type}}</li>
+                    {{/each}}
+                {{/each}}
+            </ul>
+        </li>
+
+    </ul>
+    {{/if}}
+    {{error}}
+
+</template>

@@ -21,7 +21,7 @@
     <form>
         <select class="dropdownList">
             {{#each endpointList}}
-            <option value="{{FHIRPatientFacingURI}}">{{OrganizationName}}</option>
+            <option value="{&quot;name&quot;: &quot;{{OrganizationName}}&quot;, &quot;uri&quot;: &quot;{{FHIRPatientFacingURI}}&quot;}">{{OrganizationName}}</option>
             {{/each}}
 
         </select>
@@ -37,9 +37,11 @@
 
 <template name="results">
 
-    <hr />
-    <h2>Results: </h2>
+    
     {{#if resultPresent}}
+    <h2>Result for {{resultName}}: </h2>
+    <h4>Base Endpoint: {{resultUrl}}</h4>
+    
     
     <ul>
         <li>FHIR Version: {{result.fhirVersion}}</li>

@@ -20,15 +20,15 @@ Template.dropdown.helpers({
         list = Endpoints.findOne({}).entries
       //console.dir(list)
       return list
-
   },
 });
 
 Template.dropdown.events({
     'change .dropdownList'(event, instance) {
-        event.preventDefault()
-//        console.log(event.target.value)
-        Meteor.call('getData',event.target.value)
+        var keys = JSON.parse(event.target.value)
+        console.dir(keys)
+        
+        Meteor.call('getData', keys.uri, keys.name)
   },
 });
 
@@ -37,15 +37,21 @@ Template.results.helpers({
     resultCount() {
         return Endpoints.find({ type: 'result', error:false }).count()
     },
+    resultName() {
+        return Endpoints.findOne({ type: 'result', error: false }).name
+    },
+    resultUrl() {
+        return Endpoints.findOne({ type: 'result', error: false }).url
+    },
     result() {
         result = Endpoints.findOne({ type: 'result', error:false}).data
-        console.dir(result.rest)
+       // console.dir(result.rest)
         return result
     },
     resultPresent() {
         count = Endpoints.find({ type: 'result', error: false }).count()
         if (count > 0) {
-            console.log('results are present: '+ count)
+           // console.log('results are present: '+ count)
             return true
         } else {
         return false
@@ -53,8 +59,8 @@ Template.results.helpers({
     },
     error() {
         if (Endpoints.find({ type: 'result', error: true }).count() > 0) {
-            console.log('errors in results:')
-            console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
+        //    console.log('errors in results:')
+          //  console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
             return Endpoints.find({ type: 'result', error: true }).fetch().data
 
         }

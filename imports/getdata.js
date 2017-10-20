@@ -33,10 +33,10 @@ Meteor.methods({
     // this just dumps the Endpoints collection
     'clearList': function () {
             Endpoints.rawCollection().drop()
-            console.log('list cleared')
+        //    console.log('list cleared')
         },
 
-    'getData': function (url) {
+    'getData': function (url, name) {
         // This will instantly be displayed so first clear any old data
         Endpoints.remove({ type: 'result' }) // just remove anything with the type: result.
 
@@ -46,10 +46,10 @@ Meteor.methods({
             }, function(err, res) {
 
                 if (err) {
-                    Endpoints.insert({ type: 'result', dateEntered: new Date(), data: err, error: true })
+                    Endpoints.insert({ type: 'result', name: name, dateEntered: new Date(), data: err, error: true })
             } else {
                 // store the response in the mongo collection. Use the type: 'result' so we can find it easily later and separate it from the endpoint list.
-                Endpoints.insert({ type: 'result', dateEntered: new Date(), data: res.data, error: false })
+                Endpoints.insert({ type: 'result', name: name, url: url, dateEntered: new Date(), data: res.data, error: false })
                 }
             }
         )

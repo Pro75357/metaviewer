@@ -3,84 +3,176 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Metaviewer</h1>
-        <p>
-            Looks up metadata about an Epic Organization's FHIR server
-            Based on the list from: <a href=https://open.epic.com/MyApps/Endpoints>https://open.epic.com/MyApps/Endpoints</a>
-        </p>
-        {{> buttons}}
-        <br />
-        {{> dropdown}}
-        {{> results}}
-    </div>
+        <div class="container">
+            {{> loginHeader}}
+            {{> buttons}}
+            <br />
+            {{> sourceChoice}}
+            {{> results}}
+        </div>
 </body>
 
+<!-- Templates be here -->
 
-<template name="dropdown">
-    <form>
-        <select class="dropdownList">
-            {{#each endpointList}}
-            <option value="{&quot;name&quot;: &quot;{{OrganizationName}}&quot;, &quot;uri&quot;: &quot;{{FHIRPatientFacingURI}}&quot;}">{{OrganizationName}}</option>
-            {{/each}}
-
-        </select>
-    </form>
-  <br />
-
+    <template name="loginHeader">
+        <div class="wrapper">
+            <div class="container-fluid" style="background: #002638">
+                <div class="container">
+                    <div class="col-3">
+                        <!-- if want logo use this code 
+                        <div class='pull-right'>
+                            <img src="images/cardinal_white.png" alt='Cardinal' style='width:100px; height:100px'>
+                        </div>
+                            -->
+                        <h1 style="color:white">MetaViewer</h1>
+                      <!-- If want user accounts for some reason - have to Meteor add accounts-pasword 
+                          <p style="color:white">User: {{> loginButtons}}</p>  
+                          
+                          --> 
+                        <p style="color:white">
+                            Looks up metadata from a FHIR server Endpoint
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{#if currentUser}}
+                <div class="container">
+                    {{> upload}}
+                    <br />
+                 </div>
+            {{/if}}
+         </div>
 </template>
 
-<template name="buttons">
-    <button class="getList">Get the list!</button>
-    <button class="clearList">Clear the list!</button>
+    <template name="sourceChoice">
+        {{> dropdown}}
+        {{> customEndpoint}}
+
+    </template>
+
+    <template name="dropdown">
+        <form>Use Epic's List: <a href=https://open.epic.com/MyApps/Endpoints>https://open.epic.com/MyApps/Endpoints</a>
+            <br />
+            &nbsp;&nbsp; <select class="dropdownList">
+                {{#each endpointList}}
+                <option value="{&quot;name&quot;: &quot;{{OrganizationName}}&quot;, &quot;uri&quot;: &quot;{{FHIRPatientFacingURI}}&quot;}">{{OrganizationName}}</option>
+                {{/each}}
+            </select>
+        </form>
+        <br />
+    </template>
+
+    <template name="customEndpoint">
+        <p>Or, enter custom Endpoint URL: </p>
+        <form>
+            <input style="width:450px" type="url" value="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" placeholder="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" id="customEndpoint" />
+            <br />
+            <input type="submit" />
+        </form>
+    </template>
+
+    <template name="buttons">
+        <button class="getList pull-right">Reset Everything</button>
+
+    </template>
+
+<template name="loader">
+    <!-- got loader from https://themeteorchef.com/tutorials/loading-patterns -->
+    <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+         width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+        <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
+        <animateTransform attributeType="xml"
+                          attributeName="transform"
+                          type="rotate"
+                          from="0 25 25"
+                          to="360 25 25"
+                          dur="0.6s"
+                          repeatCount="indefinite" />
+
+        </path>
+      </svg>
+</template>
+
+<template name="errorShow">
+    There was an error with fetching the metadata. This might help you understand why:    
+    <ul>
+        <li>Status Code: {{errorData.response.statusCode}}</li>
+        <li>Content: {{errorData.response.content}}</li>
+    </ul>
 </template>
 
 <template name="results">
+    {{#if resultExpected}}
+        {{#if anythingPresent}}
+            {{#if resultPresent}}
+            <h2>Result for {{resultName}}: </h2>
+            <h4>Base Endpoint: <a href="{{result.url}}" target="_blank"> {{resultUrl}} </a> </h4>
+    <div class="col-3">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <td>FHIR Version:</td>
+                <td>{{result.fhirVersion}}</td>
+            </tr>
+            <tr>
+                <td>Software Name:</td>
+                <td>{{result.software.name}} - version {{result.software.version}}</td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>{{result.status}}</td>
+            </tr>
 
-    
-    {{#if resultPresent}}
-    <h2>Result for {{resultName}}: </h2>
-    <h4>Base Endpoint: {{resultUrl}}</h4>
-    
-    
-    <ul>
-        <li>FHIR Version: {{result.fhirVersion}}</li>
-        <li>Software Name: {{result.software.name}} - version {{result.software.version}}</li>
-        <li>Status: {{result.status}}</li>
-
-        <li>
-            Security services:
-            <ul>
-                {{#each result.rest}}
-                    {{#each security.service}}
+            <tr>
+                <td>Security services:</td>
+                <td>
+                    <ul>
+                        {{#each result.rest}}
+                        {{#each security.service}}
                         <li>{{text}} </li>
-                    {{/each}}
-                {{/each}}
-            </ul>
-        </li>
-       <li> Security Extensions:
-            <ul>
-                {{#each result.rest}}
-                    {{#each security.extension}}
+                        {{/each}}
+                        {{/each}}
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Security Extensions:</td>
+                <td>
+                    <ul>
+                        {{#each result.rest}}
+                        {{#each security.extension}}
                         {{#each extension}}
                         <li>{{url}}: {{valueUri}} </li>
                         {{/each}}
-                    {{/each}}
-                {{/each}}
-            </ul>
-            </li>
-        <li>Resources:
-            <ul>
-                {{#each result.rest}}
-                    {{#each resource}}
+                        {{/each}}
+                        {{/each}}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Resources:</td> 
+                <td>
+                    <ul>
+                        {{#each result.rest}}
+                        {{#each resource}}
                         <li>{{type}}</li>
-                    {{/each}}
-                {{/each}}
-            </ul>
-        </li>
+                        {{/each}}
+                        {{/each}}
+                    </ul>
+                </td>
+            </tr>
 
-    </ul>
+        </table>
+    </div>
+            {{/if}}
+            {{#if errorPresent}}
+                {{> errorShow}}
+            {{/if}}
+        {{else}}
+            {{> loader}}
+        {{/if}}
     {{/if}}
-    {{error}}
+
 
 </template>
+

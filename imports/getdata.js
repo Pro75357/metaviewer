@@ -4,6 +4,7 @@ import { Mongo } from 'meteor/mongo'
 // Step 1
 
 export const Endpoints = new Mongo.Collection('endpoints')
+export const Results = new Mongo.Collection('results')
 
 const epicEndpoints = 'https://open.epic.com/MyApps/EndpointsJson'
 
@@ -30,26 +31,30 @@ Meteor.methods({
             })
     },
 
-    // this just dumps the Endpoints collection
+    // this just dumps everything
     'clearList': function () {
-            Endpoints.rawCollection().drop()
+        Endpoints.rawCollection().drop()
+        Results.rawCollection().drop()
         //    console.log('list cleared')
         },
 
     'getData': function (url, name) {
         // This will instantly be displayed so first clear any old data
-        Endpoints.remove({ type: 'result' }) // just remove anything with the type: result.
+        Results.rawCollection().drop() // remove any prior results
 
         // Then get the new data using the URL from the list
-        HTTP.call('GET', url+'/metadata', { //Have to add /metadata to the main URL
-                headers: { accept: 'application/json' }
-            }, function(err, res) {
 
-                if (err) {
-                    Endpoints.insert({ type: 'result', name: name, dateEntered: new Date(), data: err, error: true })
+        // Figure out whether to add a trailing slash - all of the epic URLs have / so is only helpful for the custom url
+        if (url.substr(-1) != '/') url += '/';
+
+        HTTP.call('GET', url+'metadata', { //Have to add /metadata to the base URL to retrieve metadata
+                headers: { accept: 'application/json' } //so we get straight json objects in return. 
+            }, function(err, res) {
+                if (err) { // if results in an error, store the thing with an error: true flag
+                    Results.insert({name: name, dateEntered: new Date(), data: err, error: true })
             } else {
                 // store the response in the mongo collection. Use the type: 'result' so we can find it easily later and separate it from the endpoint list.
-                Endpoints.insert({ type: 'result', name: name, url: url, dateEntered: new Date(), data: res.data, error: false })
+                Results.insert({name: name, url: url, dateEntered: new Date(), data: res.data, error: false })
                 }
             }
         )

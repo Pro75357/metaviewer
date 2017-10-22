@@ -1,17 +1,21 @@
 import { Template } from 'meteor/templating';
 import { Endpoints } from '../imports/getdata'
+import { Results } from '../imports/getdata'
 
 import './main.html';
 
 // create the mainResults variable which we will fill later
 
+// first declare a variable that will help us with loading/etc.
+
+Session.set('resultExpected', false)
+
 Template.buttons.events({
     'click .getList': function () {
         Meteor.call('getList')
+        Session.set('resultExpected', false)
+        alert('Things are reset')
     },
-    'click .clearList': function() {
-        Meteor.call('clearList')
-    }
 })
 
 
@@ -26,30 +30,38 @@ Template.dropdown.helpers({
 Template.dropdown.events({
     'change .dropdownList'(event, instance) {
         var keys = JSON.parse(event.target.value)
-        console.dir(keys)
-        
+       // console.dir(keys)
+        Session.set('resultExpected', true)
         Meteor.call('getData', keys.uri, keys.name)
   },
 });
 
 Template.results.helpers({
 
+    resultExpected() {
+        return Session.get('resultExpected')
+    },
+    anythingPresent() {
+        if (Results.find({}).count() > 0) {
+            return true
+        }
+    },
     resultCount() {
-        return Endpoints.find({ type: 'result', error:false }).count()
+        return Results.find({error:false }).count()
     },
     resultName() {
-        return Endpoints.findOne({ type: 'result', error: false }).name
+        return Results.findOne({error: false }).name
     },
     resultUrl() {
-        return Endpoints.findOne({ type: 'result', error: false }).url
+        return Results.findOne({error: false }).url
     },
     result() {
-        result = Endpoints.findOne({ type: 'result', error:false}).data
+        result = Results.findOne({error: false}).data
        // console.dir(result.rest)
         return result
     },
     resultPresent() {
-        count = Endpoints.find({ type: 'result', error: false }).count()
+        count = Results.find({error: false }).count()
         if (count > 0) {
            // console.log('results are present: '+ count)
             return true
@@ -57,13 +69,34 @@ Template.results.helpers({
         return false
         }
     },
-    error() {
-        if (Endpoints.find({ type: 'result', error: true }).count() > 0) {
-        //    console.log('errors in results:')
-          //  console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
-            return Endpoints.find({ type: 'result', error: true }).fetch().data
-
+    errorPresent() {
+        if (Results.find({error: true }).count() > 0) {
+            return true;
         }
-    }
+    },
+})
 
+Template.errorShow.helpers({
+    errorData() {
+        if (Results.find({error: true }).count() > 0) {
+            //    console.log('errors in results:')
+            //  console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
+            errors = Results.findOne({ error: true }).data
+            console.dir(errors)
+            return errors
+        }
+    },
+
+})
+
+Template.customEndpoint.events({
+    'submit form': function(event) {
+        event.preventDefault();
+        //console.log('submit clicked')
+       // console.log(event.target.customEndpoint.value)
+        var uri = event.target.customEndpoint.value + '/'
+        var name = 'Custom Endpoint'
+        Session.set('resultExpected', true)
+        Meteor.call('getData', uri, name)   
+    }
 })

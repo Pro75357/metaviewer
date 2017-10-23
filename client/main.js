@@ -34,9 +34,10 @@ Template.dropdown.helpers({
 
 Template.dropdown.events({
     'change .dropdownList'(event, instance) {
-        var keys = JSON.parse(event.target.value)
-       // console.dir(keys)
+        Session.set('results', 'no') // First, change the session variable to remove the old results screen and allow the loading thing to come back. 
         Session.set('resultExpected', true)
+        var keys = JSON.parse(event.target.value) // this is a sad workaround
+       // console.dir(keys)
         Meteor.call('getData', keys.uri, keys.name)
     },
 });
@@ -60,13 +61,13 @@ Template.results.helpers({
         return Session.get('results').url
     },
     result() {
-        return Session.get('results').data.data
+        return Session.get('results').data
     },
     resultPresent() {
         return !Session.get('results').error
     },
     errorPresent() {
-        return (Session.get('results').error == true)
+        return Session.get('results').error
     },
 })
 
@@ -86,6 +87,8 @@ Template.errorShow.helpers({
 Template.customEndpoint.events({
     'submit form': function(event) {
         event.preventDefault();
+        Session.set('results', 'no') // First, change the session variable to remove the old results screen and allow the loading thing to come back. 
+        Session.set('resultExpected', true)
         //console.log('submit clicked')
        // console.log(event.target.customEndpoint.value)
         var uri = event.target.customEndpoint.value

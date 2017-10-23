@@ -29,7 +29,7 @@ Meteor.methods({
                     //Results.insert({name: name, dateEntered: new Date(), data: err, error: true })
             } else {
                 // Results.insert({name: name, url: url, dateEntered: new Date(), data: res.data, error: false })
-                    var result = { data: res, error: false, url: url, name: name }
+                    var result = { data: res.data, error: false, url: url, name: name }
                     Session.set('results', result)
                     //{ data: res.data, error: false, url: url, name: name} // If things work well, give back this data object. We will also flag no errors here. 
                 }

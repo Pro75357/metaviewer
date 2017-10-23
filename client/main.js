@@ -94,7 +94,10 @@ Template.customEndpoint.events({
         event.preventDefault();
         //console.log('submit clicked')
        // console.log(event.target.customEndpoint.value)
-        var uri = event.target.customEndpoint.value + '/'
+        var uri = event.target.customEndpoint.value
+        if (uri == "") { //if they left the field blank (tried to use the placeholder) - go ahead and use the placeholder url instead
+            uri = 'https://open-ic.epic.com/argonaut/api/FHIR/Argonaut'
+        }
         var name = 'Custom Endpoint'
         Session.set('resultExpected', true)
         Meteor.call('getData', uri, name)   

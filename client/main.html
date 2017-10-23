@@ -15,33 +15,28 @@
 <!-- Templates be here -->
 
     <template name="loginHeader">
-        <div class="wrapper">
-            <div class="container-fluid" style="background: #002638">
-                <div class="container">
-                    <div class="col-3">
-                        <!-- if want logo use this code 
-                        <div class='pull-right'>
-                            <img src="images/cardinal_white.png" alt='Cardinal' style='width:100px; height:100px'>
-                        </div>
-                            -->
-                        <h1 style="color:white">MetaViewer</h1>
-                      <!-- If want user accounts for some reason - have to Meteor add accounts-pasword 
-                          <p style="color:white">User: {{> loginButtons}}</p>  
-                          
-                          --> 
-                        <p style="color:white">
-                            Looks up metadata from a FHIR server Endpoint
-                        </p>
+    <div class="wrapper">
+        <div class="container-fluid" style="background: #002638">
+            <div class="container-fluid">
+                <div class="col-3">
+                    <!-- if want logo use this code -->
+                    <div class='pull-right'>
+                        <a href="Http://dmice.ohsu.edu" target="_blank"><img src="images/OHSU-Black-Small.jpg" alt='OHSU DMICE' style='width:75px; height:75px'></a>
                     </div>
+
+                    <h1 style="color:white">MetaViewer</h1>
+                    <!-- If want user accounts for some reason - have to Meteor add accounts-pasword
+                        <p style="color:white">User: {{> loginButtons}}</p>
+
+                        -->
+                    <p style="color:white">
+                        Fetches and displays metadata from a FHIR server endpoint
+                    </p>
                 </div>
             </div>
-            {{#if currentUser}}
-                <div class="container">
-                    {{> upload}}
-                    <br />
-                 </div>
-            {{/if}}
-         </div>
+        </div>
+    </div>
+
 </template>
 
     <template name="sourceChoice">
@@ -51,7 +46,7 @@
     </template>
 
     <template name="dropdown">
-        <form>Use Epic's List: <a href=https://open.epic.com/MyApps/Endpoints>https://open.epic.com/MyApps/Endpoints</a>
+        <form>Use Epic's Server List: <a href="https://open.epic.com/MyApps/Endpoints" target="_blank">https://open.epic.com/MyApps/Endpoints</a>
             <br />
             &nbsp;&nbsp; <select class="dropdownList">
                 {{#each endpointList}}
@@ -63,11 +58,9 @@
     </template>
 
     <template name="customEndpoint">
-        <p>Or, enter custom Endpoint URL: </p>
+        <p>Or, enter a custom FHIR Endpoint URL: </p>
         <form>
-            <input style="width:450px" type="url" value="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" placeholder="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" id="customEndpoint" />
-            <br />
-            <input type="submit" />
+            <input style="width:450px" type="url" placeholder="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" id="customEndpoint" />
         </form>
     </template>
 

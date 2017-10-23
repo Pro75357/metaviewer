@@ -22,6 +22,7 @@ Meteor.methods({
                 if (err) {
                     // if error, tell us why
                     console.log(err)
+                    alert("cannot get Epic Endpoint list: "+err)
                     return false
                 } else {
                     // if it works, put the data results in the mongo collection called Endpoints.
@@ -45,12 +46,12 @@ Meteor.methods({
         // Then get the new data using the URL from the list
 
         // Figure out whether to add a trailing slash - all of the epic URLs have / so is only helpful for the custom url
-        console.log(url)
-        console.log('last char should be: ' + url.substr(-1)) // what is the last character?
+      //  console.log(url)
+      //  console.log('last char should be: ' + url.substr(-1)) // what is the last character?
         if (url.substr(-1) != '/') { // if is not a slash, add one
             url += '/'
         }
-        console.log('new url: '+url)
+      //  console.log('new url: '+url)
 
         HTTP.call('GET', url+'metadata', { //Have to add /metadata to the base URL to retrieve metadata
                 headers: { accept: 'application/json' } //so we get straight json objects in return. 

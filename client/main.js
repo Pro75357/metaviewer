@@ -1,6 +1,7 @@
-import { Template } from 'meteor/templating';
+import { Template } from 'meteor/templating'
 import { Endpoints } from '../imports/getdata'
-import { Results } from '../imports/getdata'
+//import { Results } from '../imports/getdata'
+  import {Session} from 'meteor/session'
 
 import './main.html';
 
@@ -9,15 +10,19 @@ import './main.html';
 // first declare a variable that will help us with loading/etc.
 
 Session.set('resultExpected', false)
+// Now create a new object variable to store our results. Keep it empty for now.
+Session.set('results', 'no')
+
+
 
 Template.buttons.events({
-    'click .getList': function () {
-        Meteor.call('getList')
+    'click .reset': function () {
+        Meteor.call('reset')
         Session.set('resultExpected', false)
-        alert('Things are reset')
+        Session.set('results', 'no')
+        alert('Full reset requested')
     },
 })
-
 
 Template.dropdown.helpers({
     endpointList() {
@@ -33,7 +38,7 @@ Template.dropdown.events({
        // console.dir(keys)
         Session.set('resultExpected', true)
         Meteor.call('getData', keys.uri, keys.name)
-  },
+    },
 });
 
 Template.results.helpers({
@@ -42,46 +47,35 @@ Template.results.helpers({
         return Session.get('resultExpected')
     },
     anythingPresent() {
-        if (Results.find({}).count() > 0) {
+        if (Session.get('results') == 'no'){
+            return false
+        } else {
             return true
         }
-    },
-    resultCount() {
-        return Results.find({error:false }).count()
     },
     resultName() {
-        return Results.findOne({error: false }).name
+        return Session.get('results').name
     },
     resultUrl() {
-        return Results.findOne({error: false }).url
+        return Session.get('results').url
     },
     result() {
-        result = Results.findOne({error: false}).data
-       // console.dir(result.rest)
-        return result
+        return Session.get('results').data.data
     },
     resultPresent() {
-        count = Results.find({error: false }).count()
-        if (count > 0) {
-           // console.log('results are present: '+ count)
-            return true
-        } else {
-        return false
-        }
+        return !Session.get('results').error
     },
     errorPresent() {
-        if (Results.find({error: true }).count() > 0) {
-            return true;
-        }
+        return (Session.get('results').error == true)
     },
 })
 
 Template.errorShow.helpers({
     errorData() {
-        if (Results.find({error: true }).count() > 0) {
+        if (Session.get('results').error == true) {
             //    console.log('errors in results:')
             //  console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
-            errors = Results.findOne({ error: true }).data
+            errors = Session.get('results').data
             console.dir(errors)
             return errors
         }
@@ -100,6 +94,6 @@ Template.customEndpoint.events({
         }
         var name = 'Custom Endpoint'
         Session.set('resultExpected', true)
-        Meteor.call('getData', uri, name)   
+        Meteor.call('getData', uri, name)
     }
 })

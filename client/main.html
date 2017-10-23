@@ -61,11 +61,12 @@
         <p>Or, enter a custom FHIR Endpoint URL: </p>
         <form>
             <input style="width:450px" type="url" placeholder="https://open-ic.epic.com/argonaut/api/FHIR/Argonaut" id="customEndpoint" />
+            <button type="submit">Submit</button>
         </form>
     </template>
 
     <template name="buttons">
-        <button class="getList pull-right">Reset Everything</button>
+        <button class="reset pull-right">Reset Everything</button>
 
     </template>
 
@@ -95,6 +96,7 @@
 </template>
 
 <template name="results">
+
     {{#if resultExpected}}
         {{#if anythingPresent}}
             {{#if resultPresent}}

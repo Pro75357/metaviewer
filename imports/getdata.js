@@ -20,21 +20,13 @@ Meteor.methods({
         }
         url = url + 'metadata'//Have to add /metadata to the base URL to retrieve metadata
 
-        HTTP.call('GET', url, {
+        res = HTTP.call('GET', url, {
                 headers: { accept: 'application/json' } //add Header accept so we get straight json objects in return. 
-            }, function(err, res) {
-                if (err) { // if results in an error, return this data with an error: true flag so we can deal with it on the client side
-                    var result = { data: err, error: true, url: url, name: name }
-                    Session.set('results', result)
-                    //Results.insert({name: name, dateEntered: new Date(), data: err, error: true })
-            } else {
-                // Results.insert({name: name, url: url, dateEntered: new Date(), data: res.data, error: false })
-                    var result = { data: res.data, error: false, url: url, name: name }
-                    Session.set('results', result)
+            })
+        var result = { data: res.data, error: false, url: url, name: name }
+        return result
+        //Session.set('results', result)
                     //{ data: res.data, error: false, url: url, name: name} // If things work well, give back this data object. We will also flag no errors here. 
-                }
-            }
-        )
         //finally, set the session variable to the result object so it can be used by the client.
 
     },

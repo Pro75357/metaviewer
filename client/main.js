@@ -37,8 +37,14 @@ Template.dropdown.events({
         Session.set('results', 'no') // First, change the session variable to remove the old results screen and allow the loading thing to come back. 
         Session.set('resultExpected', true)
         var keys = JSON.parse(event.target.value) // this is a sad workaround
-       // console.dir(keys)
-        Meteor.call('getData', keys.uri, keys.name)
+        // console.dir(keys)
+        Meteor.call('getData', keys.uri, keys.name, function (err, res) {
+            if (err) {
+                console.log(err)
+            } else {
+                Session.set('results', res)
+            }
+        })
     },
 });
 

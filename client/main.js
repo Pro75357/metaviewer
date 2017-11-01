@@ -103,6 +103,12 @@ Template.customEndpoint.events({
         }
         var name = 'Custom Endpoint'
         Session.set('resultExpected', true)
-        Meteor.call('getData', uri, name)
+        Meteor.call('getData', uri, name, function (err, res) {
+            if (err) {
+                console.log(err)
+            } else {
+                Session.set('results', res)
+            }
+        })
     }
 })

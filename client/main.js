@@ -3,7 +3,7 @@ import { Endpoints } from '../imports/getdata'
 //import { Results } from '../imports/getdata'
   import {Session} from 'meteor/session'
 
-import './main.html';
+  import './main.html'
 
 // create the mainResults variable which we will fill later
 
@@ -12,8 +12,6 @@ import './main.html';
 Session.set('resultExpected', false)
 // Now create a new object variable to store our results. Keep it empty for now.
 Session.set('results', 'no')
-
-
 
 Template.buttons.events({
     'click .reset': function () {
@@ -60,6 +58,11 @@ Template.results.helpers({
             return true
         }
     },
+    resultPresent() {
+        if (!Session.get('results').error) {
+            return true
+        }
+    },
     resultName() {
         return Session.get('results').name
     },
@@ -67,27 +70,36 @@ Template.results.helpers({
         return Session.get('results').url
     },
     result() {
-        return Session.get('results').data
+        return Session.get('results').data.data
     },
-    resultPresent() {
-        return !Session.get('results').error
+    raw() {
+        return Session.get('results').data
     },
     errorPresent() {
         return Session.get('results').error
     },
+    resultString() {
+        return JSON.stringify(Session.get('results').data, null, 2)
+    }
 })
 
 Template.errorShow.helpers({
+    htmlError() { // simply checks if there is HTML response content we can display. 
+        if (!Session.get('results').data.response.content) {
+            return false
+        } else {
+            return true
+        }
+    },
     errorData() {
         if (Session.get('results').error == true) {
-            //    console.log('errors in results:')
-            //  console.dir(Endpoints.findOne({ type: 'result', error: true }).data)
             errors = Session.get('results').data
-            console.dir(errors)
             return errors
         }
     },
-
+    errorString() { // if there is no html/content we will just display what we get as a string
+        return JSON.stringify(Session.get('results').data, null, 2)
+    }
 })
 
 Template.customEndpoint.events({

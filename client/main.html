@@ -88,11 +88,29 @@
 </template>
 
 <template name="errorShow">
-    There was an error with fetching the metadata. This might help you understand why:    
-    <ul>
-        <li>Status Code: {{errorData.response.statusCode}}</li>
-        <li>Content: {{errorData.response.content}}</li>
-    </ul>
+    <br />
+    There was an error fetching the metadata. This might help you understand why:    
+    <br />
+    Status Code: 
+    {{#if errorData.response.statusCode}}
+        {{errorData.response.statusCode}}
+        {{else}}
+        No status code!
+    {{/if}}
+    <br />
+    {{#if htmlError}}
+      HTML response error content:
+    <div class="container">
+        <iframe srcdoc="{{errorData.response.content}}"  sandbox="" style="width: inherit; height: 400px"></iframe>
+    </div>    
+    {{else}}
+        Did not find any useful HTML response content. Displaying raw error data: <br />
+    <div class="container">
+        <pre>
+            {{errorString}}    
+        </pre>
+    </div>
+    {{/if}}
 </template>
 
 <template name="results">
@@ -100,8 +118,9 @@
     {{#if resultExpected}}
         {{#if anythingPresent}}
             {{#if resultPresent}}
+            {{#if result}}
             <h2>Result for {{resultName}}: </h2>
-            <h4>Base Endpoint: <a href="{{result.url}}" target="_blank"> {{resultUrl}} </a> </h4>
+            <h4>Metadata URL: <a href="{{result.url}}" target="_blank"> {{resultUrl}} </a> </h4>
     <div class="col-3">
         <table class="table table-striped table-bordered">
             <tr>
@@ -159,7 +178,23 @@
 
         </table>
     </div>
-            {{/if}}
+    
+        {{else}}        
+    Non-error HTML response returned, but result is not as expected. <br />
+    Raw result: <br />
+        {{#if raw.content}}
+    <div class="container">
+        <iframe srcdoc="{{raw.content}}" sandbox="" style="width: inherit; height: 400px"></iframe>
+    </div>   
+        {{else}}
+            <div class="container">
+                <pre>
+                        {{resultString}}
+        </pre>
+            </div>
+        {{/if}}
+    {{/if}}
+    {{/if}}
             {{#if errorPresent}}
                 {{> errorShow}}
             {{/if}}

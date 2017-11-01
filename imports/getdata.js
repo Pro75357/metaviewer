@@ -20,15 +20,27 @@ Meteor.methods({
         }
         url = url + 'metadata'//Have to add /metadata to the base URL to retrieve metadata
 
-        res = HTTP.call('GET', url, {
-                headers: { accept: 'application/json' } //add Header accept so we get straight json objects in return. 
+        try {
+            res = HTTP.call('GET', url, {
+                headers: { accept: 'application/json, application/json+fhir' } //add Header accept so we get straight json objects in return. 
             })
-        var result = { data: res.data, error: false, url: url, name: name }
-        return result
-        //Session.set('results', result)
-                    //{ data: res.data, error: false, url: url, name: name} // If things work well, give back this data object. We will also flag no errors here. 
-        //finally, set the session variable to the result object so it can be used by the client.
-
+            if (res.data) { // if the data element is populated, just use that
+               return { data: res, error: false, url: url, name: name }
+            } else {
+                try { // first, try to parse content as JSON
+                    var data = { data: JSON.parse(res.content) } // to keep the data.data thing consistent
+                    var result = { data: data, error: false, url: url, name: name }
+                    return result
+                } catch (e) { // if it gives an error, just return the data. 
+                    console.log('json parse failed for content')
+                    return { data: res, error: false, url: url, name: name }
+                }
+                
+            } // If there is an error in the HTTP call, also just return the data, but we will set the error flag to true. 
+        } catch (e) {
+            console.log(e)
+            return { data: e, error: true, url: url, name: name }
+        }
     },
 
     'reset': function () {

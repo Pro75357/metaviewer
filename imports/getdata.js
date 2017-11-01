@@ -32,13 +32,13 @@ Meteor.methods({
                     var result = { data: data, error: false, url: url, name: name }
                     return result
                 } catch (e) { // if it gives an error, just return the data. 
-                    console.log('json parse failed for content')
+                    //console.log('json parse failed for content')
                     return { data: res, error: false, url: url, name: name }
                 }
                 
             } // If there is an error in the HTTP call, also just return the data, but we will set the error flag to true. 
         } catch (e) {
-            console.log(e)
+          //  console.log(e)
             return { data: e, error: true, url: url, name: name }
         }
     },
